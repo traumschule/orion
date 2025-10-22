@@ -244,12 +244,13 @@ export async function processTokenMetadata(
     token.description = metadata.description
   }
 
-  // remove all current bnefits
+  // remove all current benefits
   const existingBenefit = await overlay
     .getRepository(Benefit)
     .getManyByRelation('tokenId', token.id)
   if (existingBenefit !== undefined) {
     overlay.getRepository(Benefit).remove(...existingBenefit)
+    await overlay.updateDatabase()
   }
 
   if (isSet(metadata.benefits)) {
