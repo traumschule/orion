@@ -261,6 +261,7 @@ async function processVideoLicense(
     // license is meant to be unset/removed
     if (video.licenseId) {
       licenseRepository.remove(video.licenseId)
+      await overlay.updateDatabase()
     }
     video.licenseId = null
   }
@@ -278,6 +279,7 @@ async function processVideoSubtitles(
   const currentSubtitles = await subtitlesRepository.getManyByRelation('videoId', video.id)
   dataObjectRepository.remove(...currentSubtitles.flatMap((s) => (s.assetId ? [s.assetId] : [])))
   subtitlesRepository.remove(...currentSubtitles)
+  await overlay.updateDatabase()
   for (const subtitleMeta of subtitlesMeta) {
     const subtitleId = `${video.id}-${subtitleMeta.type}-${subtitleMeta.language}`
     const subtitle = subtitlesRepository.new({
@@ -524,6 +526,7 @@ export async function processBanOrUnbanMemberFromChannelMessage(
   // unban member from channel
   if (option === BanOrUnbanMemberFromChannel.Option.UNBAN) {
     overlay.getRepository(BannedMember).remove(`${channel.id}-${member.id}`)
+    await overlay.updateDatabase()
   }
 
   // event processing

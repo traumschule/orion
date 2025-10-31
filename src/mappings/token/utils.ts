@@ -36,6 +36,7 @@ export async function removeVesting(overlay: EntityManagerOverlay, vestedAccount
   const vestedAccountRepository = overlay.getRepository(VestedAccount)
   const vestedAccountToRemove = await vestedAccountRepository.getByIdOrFail(vestedAccountId)
   vestedAccountRepository.remove(vestedAccountToRemove)
+  await overlay.updateDatabase()
 }
 
 export class VestingScheduleData {
@@ -89,6 +90,7 @@ export async function burnFromVesting(
     }
     if (vesting.totalVestingAmount <= tallyBurnedAmount) {
       await removeVesting(overlay, vesting.id)
+      await overlay.updateDatabase()
       tallyBurnedAmount -= vesting.totalVestingAmount
     } else {
       vesting.totalVestingAmount -= tallyBurnedAmount
@@ -303,6 +305,7 @@ export async function processTokenMetadata(
       }
       if (oldTrailer) {
         trailerVideoRepository.remove(oldTrailer)
+	await overlay.updateDatabase()
       }
 
       const id = overlay.getRepository(TrailerVideo).getNewEntityId()
@@ -317,6 +320,7 @@ export async function processTokenMetadata(
     const oldTrailer = await trailerVideoRepository.getOneByRelation('tokenId', token.id)
     if (oldTrailer) {
       trailerVideoRepository.remove(oldTrailer)
+      await overlay.updateDatabase()
     }
   }
 }
