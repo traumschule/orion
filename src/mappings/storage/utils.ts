@@ -174,7 +174,6 @@ export async function removeDistributionBucketOperator(
 ) {
   overlay.getRepository(DistributionBucketOperator).remove(operatorId)
   overlay.getRepository(DistributionBucketOperatorMetadata).remove(operatorId)
-  //await overlay.updateDatabase()
 }
 
 export async function getOrCreateBag(
@@ -202,7 +201,6 @@ export async function deleteDataObjects(
 ) {
   overlay.getRepository(StorageDataObject).remove(...objects)
   await Promise.all(objects.map((o) => unsetAssetRelations(overlay, o)))
-  //await overlay.updateDatabase()
 }
 
 export async function deleteDataObjectsByIds(overlay: EntityManagerOverlay, ids: bigint[]) {
@@ -211,5 +209,4 @@ export async function deleteDataObjectsByIds(overlay: EntityManagerOverlay, ids:
     ids.map((id) => dataObjectRepository.getByIdOrFail(id.toString()))
   )
   await deleteDataObjects(overlay, objects)
-  //await overlay.updateDatabase()
 }

@@ -144,7 +144,6 @@ export async function processStorageBucketOperatorRemovedEvent({
     .getByIdOrFail(bucketId.toString())
   storageBucket.operatorStatus = new StorageBucketOperatorStatusMissing()
   overlay.getRepository(StorageBucketOperatorMetadataEntity).remove(storageBucket.id)
-  await overlay.updateDatabase()
 }
 
 export async function processStorageBucketsUpdatedForBagEvent({
@@ -157,7 +156,6 @@ export async function processStorageBucketsUpdatedForBagEvent({
   overlay
     .getRepository(StorageBucketBag)
     .remove(...removedBuckets.map((bucketId) => storageBucketBagData(bucketId, bagId)))
-  await overlay.updateDatabase()
   addedBuckets.forEach((bucketId) =>
     overlay.getRepository(StorageBucketBag).new(storageBucketBagData(bucketId, bagId))
   )
@@ -195,7 +193,6 @@ export async function processStorageBucketDeletedEvent({
   // There should be already no bags assigned - enforced by the runtime
   overlay.getRepository(StorageBucketOperatorMetadataEntity).remove(bucketId.toString())
   overlay.getRepository(StorageBucket).remove(bucketId.toString())
-  await overlay.updateDatabase()
 }
 
 // DYNAMIC BAG EVENTS
@@ -256,7 +253,6 @@ export async function processDynamicBagDeletedEvent({
   overlay.getRepository(DistributionBucketBag).remove(...bagDistributionBucketRelations)
   await deleteDataObjects(overlay, objects)
   overlay.getRepository(StorageBag).remove(dynBagId)
-  await overlay.updateDatabase()
 }
 
 // // DATA OBJECT EVENTS
@@ -302,7 +298,6 @@ export async function processDataObjectsUpdatedEvent({
     uploadedObjectIds
   )
   await deleteDataObjectsByIds(overlay, objectsToRemoveIds)
-  await overlay.updateDatabase()
 }
 
 export async function processPendingDataObjectsAcceptedEvent({
@@ -371,7 +366,6 @@ export async function processDistributionBucketFamilyDeletedEvent({
 }: EventHandlerContext<'Storage.DistributionBucketFamilyDeleted'>): Promise<void> {
   overlay.getRepository(DistributionBucketFamilyMetadataEntity).remove(familyId.toString())
   overlay.getRepository(DistributionBucketFamily).remove(familyId.toString())
-  await overlay.updateDatabase()
 }
 
 // DISTRIBUTION BUCKET EVENTS
@@ -409,7 +403,6 @@ export async function processDistributionBucketDeletedEvent({
 }: EventHandlerContext<'Storage.DistributionBucketDeleted'>): Promise<void> {
   // Operators and bags need to be empty (enforced by runtime)
   overlay.getRepository(DistributionBucket).remove(distributionBucketId(bucketId))
-  await overlay.updateDatabase()
 }
 
 export async function processDistributionBucketsUpdatedForBagEvent({
@@ -430,7 +423,6 @@ export async function processDistributionBucketsUpdatedForBagEvent({
       )
     )
   )
-  await overlay.updateDatabase()
   addedBucketsIndices.forEach((index) =>
     overlay.getRepository(DistributionBucketBag).new(
       distributionBucketBagData(
@@ -481,7 +473,6 @@ export async function processDistributionBucketInvitationCancelledEvent({
   overlay
     .getRepository(DistributionBucketOperator)
     .remove(distributionOperatorId(bucketId, workerId))
-  await overlay.updateDatabase()
 }
 
 export async function processDistributionBucketInvitationAcceptedEvent({
@@ -519,5 +510,4 @@ export async function processDistributionBucketOperatorRemovedEvent({
   },
 }: EventHandlerContext<'Storage.DistributionBucketOperatorRemoved'>): Promise<void> {
   await removeDistributionBucketOperator(overlay, distributionOperatorId(bucketId, workerId))
-  await overlay.updateDatabase()
 }
