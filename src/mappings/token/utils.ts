@@ -36,7 +36,6 @@ export async function removeVesting(overlay: EntityManagerOverlay, vestedAccount
   const vestedAccountRepository = overlay.getRepository(VestedAccount)
   const vestedAccountToRemove = await vestedAccountRepository.getByIdOrFail(vestedAccountId)
   vestedAccountRepository.remove(vestedAccountToRemove)
-  await overlay.updateDatabase()
 }
 
 export class VestingScheduleData {
@@ -90,7 +89,6 @@ export async function burnFromVesting(
     }
     if (vesting.totalVestingAmount <= tallyBurnedAmount) {
       await removeVesting(overlay, vesting.id)
-      await overlay.updateDatabase()
       tallyBurnedAmount -= vesting.totalVestingAmount
     } else {
       vesting.totalVestingAmount -= tallyBurnedAmount
