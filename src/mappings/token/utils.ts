@@ -303,7 +303,7 @@ export async function processTokenMetadata(
       }
       if (oldTrailer) {
         trailerVideoRepository.remove(oldTrailer)
-	await overlay.updateDatabase()
+        await overlay.updateDatabase()
       }
 
       const id = overlay.getRepository(TrailerVideo).getNewEntityId()
